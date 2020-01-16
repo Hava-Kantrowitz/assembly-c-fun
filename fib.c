@@ -9,10 +9,15 @@ main(int argc, char* argv[])
 {
     if (argc != 2) {
         printf("Usage:\n  %s N, where N > 0\n", argv[0]);
-        return 0;
+        return 1;
     }
 
     long x = atol(argv[1]);
+
+    if (x < 0) {
+	    printf("Usage:\n %s N, where N > 0\n", argv[0]);
+	    return 1;
+    }
 
     long fibResult = fib(x);
 
