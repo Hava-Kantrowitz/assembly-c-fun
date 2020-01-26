@@ -23,8 +23,8 @@ swap:
   cmp %rdx, %rsi
   je swap_end
 
-  lea (%rdi, %rsi, 8), %r9
-  lea (%rdi, %rdx, 8), %r10
+  mov (%rdi, %rsi, 8), %r9
+  mov (%rdi, %rdx, 8), %r10
 
   mov %r10, (%rdi, %rsi, 8)
   mov %r9, (%rdi, %rdx, 8)
@@ -38,11 +38,11 @@ swap_end:
 /*
 	Variable Mappings:
 		xs = %r12
-		lo = %r13
+		lo = %rsi
 		hi = %r14
 		ii = %r15
 		jj = %rbx
-		pivot = %r9
+		pivot = %r13
 */
 partition:
   push %r12
@@ -53,23 +53,22 @@ partition:
   enter $8, $0
 
   mov %rdi, %r12
-  mov %rsi, %r13
+  mov %rsi, %rsi
   mov %rdx, %r14
 
   dec %r14
 
-  lea (%r12, %r14, 8), %r10
-  mov (%r10), %r9
+  mov (%r12, %r14, 8), %r13
   
-  mov %r13, %r15
-  mov %r13, %rbx
+  mov %rsi, %r15
+  mov %rsi, %rbx
 
 pivot_loop_cond:
   cmp %r14, %rbx
   jge pivot_loop_end
 
   lea (%r12, %rbx, 8), %r10
-  cmp %r9, (%r10)
+  cmp %r13, (%r10)
   jge pivot_outer_loop
 
   mov %r12, %rdi
@@ -106,27 +105,37 @@ pivot_loop_end:
 		lo = %r13
 		hi = %r14
 		pp = %r15
+		pp+1 = %rbx
+		hi-lo = %r9
 */
 quicksort:
   push %r12
   push %r13
   push %r14
   push %r15
-  enter $16, $0
+  push %rbx
+  enter $8, $0
 
   mov %rdi, %r12
   mov %rsi, %r13
   mov %rdx, %r14
 
   /*Subtract lo from hi, perform comparison, then add it back*/
-  sub %r13, %r14
-  cmp $1, %r14
+  mov %r14, %r9
+  sub %r13, %r9
+  cmp $1, %r9
   jl quicksort_end
-  add %r13, %r14
 
-  /*xs, lo, and hi are still in rdi, rsi, rdx, so can call directly*/
+  /*Call partition*/
+  mov %r12, %rdi
+  mov %r13, %rsi
+  mov %r14, %rdx
   call partition
   mov %rax, %r15
+
+  /*Increase and save pp+1*/
+  mov %rax, %rbx
+  inc %rbx
 
   /*mov xs, lo,  pp into calling registers*/
   mov %r12, %rdi
@@ -136,14 +145,14 @@ quicksort:
 
   /*move xs, move/increase pp and move hi*/
   mov %r12, %rdi
-  inc %r15
-  mov %r15, %rsi
+  mov %rbx, %rsi
   mov %r14, %rdx
   call quicksort
   
 
 quicksort_end: 
   leave
+  pop %rbx
   pop %r15
   pop %r14
   pop %r13
@@ -239,8 +248,7 @@ print_loop_cond:
   jge print_loop_done
 
   mov $loop_printfmt, %rdi
-  lea (%r13, %r14, 8), %r9
-  mov (%r9), %rsi
+  mov (%r13, %r14, 8), %rsi
   mov $0, %al
   call printf
 
