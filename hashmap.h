@@ -4,14 +4,14 @@
 #include <stdbool.h>
 
 typedef struct hashmap_pair {
-    char key[4]; // null terminated strings
+    char* key; // null terminated strings
     int  val;
     bool used;
     bool tomb;
 } hashmap_pair;
 
 typedef struct hashmap {
-    hashmap_pair* items;
+    hashmap_pair** data;
     int size;
     int capacity;
 } hashmap;

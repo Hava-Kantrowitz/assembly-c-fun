@@ -10,8 +10,8 @@ void
 chomp(char* text)
 {
     int length = strlen(text);
-    if (text[length] == '\n') {
-	    text[length] = '\0';
+    if (text[length-1] == '\n') {
+	    text[length-1] = '\0';
     }
 }
 
@@ -67,8 +67,8 @@ main(int argc, char* argv[])
         tops[ii].val = 0;
     }
 
-    // TODO: 0 is probably the wrong loop bound here.
-    for (int ii = 0; ii < 0; ++ii) {
+    // TODO: 0 is probably the wrong loop bound here 
+    for (int ii = 0; ii < NN; ++ii) {
         hashmap_pair pair = hashmap_get_pair(trips, ii);
         if (!pair.used || pair.tomb) {
             continue;

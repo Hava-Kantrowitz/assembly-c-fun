@@ -57,8 +57,6 @@ svec_push_back(svec* sv, char* item)
     }
 
     sv->size = ii + 1;
-    //printf("Size is %d\n", sv->size);
-    //printf("Capacity is %d\n", sv->capacity);
     svec_put(sv, ii, item);
 }
 
@@ -72,11 +70,3 @@ svec_swap(svec* sv, int ii, int jj)
     sv->data[jj] = firstItem; 
 }
 
-svec*
-create_svec(svec* old_svec, int capacity) {
-    svec* sv = malloc(sizeof(svec));
-    sv->data = old_svec->data;
-    sv->size = old_svec->size;
-    sv->capacity = capacity;
-    return sv;
-}
